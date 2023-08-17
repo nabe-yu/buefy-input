@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>input</title>
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.8.55/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+</head>
+
+<body>
+    <section class="columns my-5 is-centered  is-vcentered">
+        <div class="container content column is-5">
+            <div class="container content is-centered">
+                <div id="app">
+                    <b-field>
+                        <b-input v-model="text"></b-input>
+                    </b-field>
+                    <qrcode :value=text :options="{ width: 400 }" tag="img"></qrcode>
+                </div>
+            </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script src="https://unpkg.com/qrcode@1.5.0/build/qrcode.js"></script>
+    <script src="https://unpkg.com/@chenfengyuan/vue-qrcode@1"></script>
+    <script>Vue.component(VueQrcode.name, VueQrcode);</script>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                text: ''
+            }
+        })
+    </script>
+</body>
+
+</html>
