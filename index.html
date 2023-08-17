@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 
 <head>
     <meta charset="utf-8">
@@ -15,10 +15,27 @@
         <div class="container content column is-5">
             <div class="container content is-centered">
                 <div id="app">
-                    <b-field>
-                        <b-input v-model="text"></b-input>
-                    </b-field>
-                    <qrcode :value=text :options="{ width: 400 }" tag="img"></qrcode>
+
+                    <div class="box">
+
+
+                        <b-field label="テキストボックス1つ">
+                            <b-input :has-counter="false" minlength="8" maxlength="8" pattern="[０-９0-9]{8}"
+                                v-model="inputText1" placeholder="19650315">
+                            </b-input>
+                        </b-field>
+                        <b-tag>{{date1}}</b-tag>
+                    </div>
+
+                    <div class="box">
+                        <b-field label="テキストボックス3つ">
+                            <b-input pattern="^[12１２][０-９0-9]{3}" v-model="inputText2" placeholder="1965"></b-input>
+                            <b-input pattern="[０-９0-9]{1,2}" v-model="inputText3" placeholder="3"></b-input>
+                            <b-input pattern="[０-９0-9]{1,2}" v-model="inputText4" placeholder="15"></b-input>
+                        </b-field>
+                        <b-tag>{{date2}}</b-tag>
+                    </div>
+                    <!-- <qrcode :value=text :options="{ width: 400 }" tag="img"></qrcode> -->
                 </div>
             </div>
     </section>
@@ -33,7 +50,26 @@
         new Vue({
             el: "#app",
             data: {
-                text: ''
+                inputText1: '',
+                inputText2: '',
+                inputText3: '',
+                inputText4: ''
+            },
+            methods: {
+                convertToHalfWidth(inputText) {
+                    return inputText.replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 65248));
+                }
+            },
+            computed: {
+                date1: function () {
+                    return this.convertToHalfWidth(this.inputText1).padStart(8, '0')
+                },
+                date2: function () {
+                    const d1 = this.convertToHalfWidth(this.inputText2)
+                    const d2 = this.convertToHalfWidth(this.inputText3)
+                    const d3 = this.convertToHalfWidth(this.inputText4)
+                    return `${d1}${d2.padStart(2, '0')}${d3.padStart(2, '0')}`.padStart(8, '0')
+                }
             }
         })
     </script>
