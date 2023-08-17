@@ -17,23 +17,33 @@
                 <div id="app">
 
                     <div class="box">
-
-
+                        <b-tag>{{date1}}</b-tag>
                         <b-field label="テキストボックス1つ">
                             <b-input :has-counter="false" minlength="8" maxlength="8" pattern="[０-９0-9]{8}"
-                                v-model="inputText1" placeholder="19650315">
+                                v-model="inputText1" placeholder="19650315" @blur="inputText1blur">
                             </b-input>
                         </b-field>
-                        <b-tag>{{date1}}</b-tag>
                     </div>
 
                     <div class="box">
-                        <b-field label="テキストボックス3つ">
-                            <b-input pattern="^[12１２][０-９0-9]{3}" v-model="inputText2" placeholder="1965"></b-input>
-                            <b-input pattern="[０-９0-9]{1,2}" v-model="inputText3" placeholder="3"></b-input>
-                            <b-input pattern="[０-９0-9]{1,2}" v-model="inputText4" placeholder="15"></b-input>
-                        </b-field>
                         <b-tag>{{date2}}</b-tag>
+                        <b-field label="テキストボックス3つ">
+                            <span v-if="isWareki">
+                                <b-select v-model="inputText2">
+                                    <option v-for="option in yearList" :value="option.year" :key="option.year">
+                                        {{option.jpName}}</option>
+                                </b-select>
+                            </span>
+                            <span v-else>
+                                <b-input :has-counter="false" minlength="4" maxlength="4" pattern="^[12１２][０-９0-9]{3}"
+                                    v-model="inputText2" placeholder="1965" @blur="inputText2blur"></b-input>
+                            </span>
+                            <b-input :has-counter="false" minlength="1" maxlength="2" pattern="[０-９0-9]{1,2}"
+                                v-model="inputText3" placeholder="3" @blur="inputText3blur"></b-input>
+                            <b-input :has-counter="false" minlength="1" maxlength="2" pattern="[０-９0-9]{1,2}"
+                                v-model="inputText4" placeholder="15" @blur="inputText4blur"></b-input>
+                        </b-field>
+                        <b-switch v-model="isWareki">和暦入力</b-switch>
                     </div>
                     <!-- <qrcode :value=text :options="{ width: 400 }" tag="img"></qrcode> -->
                 </div>
@@ -53,12 +63,46 @@
                 inputText1: '',
                 inputText2: '',
                 inputText3: '',
-                inputText4: ''
+                inputText4: '',
+                inputTextWareki: '',
+                isWareki: false,
+                yearList: []
             },
             methods: {
                 convertToHalfWidth(inputText) {
                     return inputText.replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 65248));
+                },
+                setYearList() {
+                    const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step)
+                    const currentYear = new Date().getFullYear()
+                    const yearRange = range(currentYear - 140, currentYear, 1).reverse()
+                    this.yearList = yearRange.map(x => ({ year: x.toString(), jpName: `${x}/${this.convertYearToJapaneseEra(x)}年` }))
+                },
+                eraInput(val) {
+                    this.inputText2 = val.toString()
+                },
+                convertYearToJapaneseEra(year) {
+                    var m = new Date(year, 0, 1); // e.g. "2022-01-01"
+                    var dt = new Intl.DateTimeFormat('ja-JP-u-ca-japanese', { era: 'short' });
+                    var [{ value: era }, { value: year }] = dt.formatToParts(m); // e.g. {type: 'era', value: '令和'},{type: 'year', value: '4'},{type: 'literal', value: '年'}
+                    var str = era + year;
+                    return str; // e.g. "令和4"
+                },
+                inputText1blur() {
+                    this.inputText1 = this.convertToHalfWidth(this.inputText1)
+                },
+                inputText2blur() {
+                    this.inputText2 = this.convertToHalfWidth(this.inputText2)
+                },
+                inputText3blur() {
+                    this.inputText3 = this.convertToHalfWidth(this.inputText3)
+                },
+                inputText4blur() {
+                    this.inputText4 = this.convertToHalfWidth(this.inputText4)
                 }
+            },
+            mounted: function () {
+                this.setYearList()
             },
             computed: {
                 date1: function () {
@@ -74,5 +118,4 @@
         })
     </script>
 </body>
-
 </html>
